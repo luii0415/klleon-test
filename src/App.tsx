@@ -11,12 +11,11 @@ declare global {
 
 function App() {
   const [count, setCount] = useState(0);
-  const [sdkReady, setSdkReady] = useState(false);
+  // const [sdkReady, setSdkReady] = useState(false);
   useEffect(() => {
     const checkSDK = () => {
       if (window.KlleonChat) {
         console.log("✅ KlleonChat SDK 로드 완료:", window.KlleonChat);
-        setSdkReady(true);
       } else {
         console.warn(
           "⏳ KlleonChat SDK가 아직 로드되지 않았습니다. 재시도 중..."
