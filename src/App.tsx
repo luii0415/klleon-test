@@ -1,53 +1,41 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-
-declare global {
-  interface Window {
-    KlleonChat: any;
-  }
-}
+import { useEffect } from "react";
 
 function App() {
-  const [count, setCount] = useState(0);
-  // const [sdkReady, setSdkReady] = useState(false);
   useEffect(() => {
-    const checkSDK = () => {
-      if (window.KlleonChat) {
-        console.log("✅ KlleonChat SDK 로드 완료:", window.KlleonChat);
-      } else {
-        console.warn(
-          "⏳ KlleonChat SDK가 아직 로드되지 않았습니다. 재시도 중..."
-        );
-      }
+    const { KlleonChat } = window;
+
+    const init = async () => {
+      // 1. Status 이벤트 리스너 등록
+      KlleonChat.onStatusEvent((status) => {
+        // 상세한 Status 값과 의미는 'usage > 이벤트 처리' 문서를 참고하세요.
+        if (status === "VIDEO_CAN_PLAY") {
+          console.log("아바타 영상 재생 준비 완료!");
+        }
+      });
+
+      // 2. Chat 이벤트 리스너 등록
+      KlleonChat.onChatEvent((chatData) => {
+        // 상세한 ChatData 구조와 chat_type은 'usage > 이벤트 처리' 문서를 참고하세요.
+        console.log("SDK Chat Event:", chatData);
+      });
+
+      // 3. SDK 초기화
+      await KlleonChat.init({
+        sdk_key: "YOUR_SDK_KEY",
+        avatar_id: "YOUR_AVATAR_ID",
+        // custom_id: "YOUR_CUSTOM_ID",
+        // user_key: "YOUR_USER_KEY",
+        // voice_code: "ko_kr",
+        // subtitle_code: "ko_kr",
+        // voice_tts_speech_speed: 1,
+        // enable_microphone: true,
+        // log_level: "debug",
+      });
     };
-    checkSDK();
+    init();
   }, []);
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  );
+
+  return <></>;
 }
 
 export default App;
