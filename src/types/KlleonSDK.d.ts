@@ -1,4 +1,3 @@
-import type * as React from "react";
 type BaseStatus =
   | "IDLE"
   | "CONNECTING"
@@ -91,13 +90,13 @@ declare global {
 
   namespace JSX {
     interface IntrinsicElements {
-      "avatar-container": React.DetailedHTMLProps<
+      "Avatar-container": React.DetailedHTMLProps<
         Omit<React.HTMLAttributes<HTMLElement>, "className"> & {
           class?: string;
         },
         HTMLElement
       >;
-      "chat-container": React.DetailedHTMLProps<
+      "Chat-container": React.DetailedHTMLProps<
         Omit<React.HTMLAttributes<HTMLElement>, "className"> & {
           class?: string;
         },
@@ -106,4 +105,3 @@ declare global {
     }
   }
 }
-export {};
