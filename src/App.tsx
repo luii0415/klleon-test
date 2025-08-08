@@ -21,8 +21,8 @@ function App() {
 
       // 3. SDK 초기화
       await KlleonChat.init({
-        sdk_key: "YOUR_SDK_KEY",
-        avatar_id: "YOUR_AVATAR_ID",
+        sdk_key: import.meta.env.VITE_API_KEY,
+        avatar_id: import.meta.env.VITE_API_Model,
         // custom_id: "YOUR_CUSTOM_ID",
         // user_key: "YOUR_USER_KEY",
         // voice_code: "ko_kr",
