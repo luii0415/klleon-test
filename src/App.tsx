@@ -78,9 +78,9 @@ function App() {
 
   // 추가 기능 핸들러들
   const sendTextMessage = () => {
-    const { KlleonChat } = window;
     if (message.trim()) {
-      KlleonChat.sendTextMessage(message);
+      // 텍스트 입력이 완료되면 AI에게 보내지 않고 에코 실행
+      echo();
       setMessage("");
     }
   };
@@ -93,6 +93,8 @@ function App() {
   const endStt = () => {
     const { KlleonChat } = window;
     KlleonChat.endStt();
+    // 음성 입력이 끝나면 에코 실행
+    echo();
   };
 
   // 수정된 에코 함수 - JSON 파일에서 순차적으로 메시지 읽기
@@ -157,10 +159,10 @@ function App() {
             Status: {status} {isAvatarSpeaking && "(발화중)"}
           </div>
 
-          {/* 텍스트 메시지 */}
+          {/* 텍스트 메시지 - 입력 후 에코 실행 */}
           <div style={{ display: "flex", gap: "8px" }}>
             <input
-              placeholder="텍스트 메시지 입력"
+              placeholder="텍스트 메시지 입력 (입력 후 에코 실행)"
               value={message}
               disabled={isAvatarSpeaking}
               onChange={(e) => setMessage(e.target.value)}
@@ -191,11 +193,11 @@ function App() {
                     : "pointer",
               }}
             >
-              전송
+              입력완료
             </button>
           </div>
 
-          {/* 음성 메시지 */}
+          {/* 음성 메시지 - 종료 후 에코 실행 */}
           <div style={{ display: "flex", gap: "8px" }}>
             <button
               onClick={startStt}
@@ -221,7 +223,7 @@ function App() {
                 color: "white",
               }}
             >
-              음성 종료
+              음성 종료 (종료 후 에코 실행)
             </button>
           </div>
 
