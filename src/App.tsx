@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ChatData, ResponseChatType, Status } from "./types/KlleonSDK";
+import { Status } from "./types/KlleonSDK";
 import type { AvatarProps, ChatProps } from "./types/KlleonSDK";
 
 const SDK_KEY = import.meta.env.VITE_API_KEY;
