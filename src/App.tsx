@@ -11,7 +11,9 @@ function App() {
   const [echoMessage, setEchoMessage] = useState("");
   const [isAvatarSpeaking, setIsAvatarSpeaking] = useState(false);
   const [status, setStatus] = useState<Status>("IDLE");
-  const [chatHistory] = useState<
+  const [echoMessages, _setEchoMessages] = useState<string[]>([]);
+  const [currentEchoIndex, setCurrentEchoIndex] = useState(0);
+  const [chatHistory, _setChatHistory] = useState<
     { type: "user" | "avatar" | "echo"; message: string; time: string }[]
   >([]);
 
@@ -54,7 +56,7 @@ function App() {
 
     init();
 
-    // 첫 번째 코드의 아바타 설정
+    // 아바타 설정
     if (avatarRef.current) {
       avatarRef.current.videoStyle = {
         borderRadius: "30px",
@@ -63,7 +65,7 @@ function App() {
       avatarRef.current.volume = 100;
     }
 
-    // 첫 번째 코드의 채팅 설정
+    // 채팅 설정
     if (chatRef.current) {
       chatRef.current.delay = 30;
       chatRef.current.type = "text";
@@ -96,9 +98,22 @@ function App() {
 
   const echo = () => {
     const { KlleonChat } = window;
-    if (echoMessage.trim()) {
-      KlleonChat.echo(echoMessage);
-      setEchoMessage("");
+    if (echoMessages.length > 0) {
+      const messageToEcho = echoMessages[currentEchoIndex];
+      console.log(
+        `에코 실행: [${currentEchoIndex + 1}/${
+          echoMessages.length
+        }] ${messageToEcho}`
+      );
+
+      KlleonChat.echo(messageToEcho);
+
+      // 다음 인덱스로 이동 (마지막이면 처음으로)
+      setCurrentEchoIndex((prev) =>
+        prev + 1 >= echoMessages.length ? 0 : prev + 1
+      );
+    } else {
+      console.log("에코 메시지가 아직 로드되지 않았습니다.");
     }
   };
 
@@ -144,6 +159,13 @@ function App() {
         >
           <div style={{ fontSize: "12px", color: "#666" }}>
             Status: {status} {isAvatarSpeaking && "(발화중)"}
+            <br />
+            에코:{" "}
+            {echoMessages.length > 0
+              ? `${currentEchoIndex + 1}/${echoMessages.length} - "${
+                  echoMessages[currentEchoIndex]
+                }"`
+              : "로딩중..."}
           </div>
 
           {/* 텍스트 메시지 */}
