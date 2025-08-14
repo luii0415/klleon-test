@@ -11,7 +11,7 @@ function App() {
   const [echoMessage, setEchoMessage] = useState("");
   const [isAvatarSpeaking, setIsAvatarSpeaking] = useState(false);
   const [status, setStatus] = useState<Status>("IDLE");
-  const [chatHistory, setChatHistory] = useState<
+  const [chatHistory] = useState<
     { type: "user" | "avatar" | "echo"; message: string; time: string }[]
   >([]);
 
