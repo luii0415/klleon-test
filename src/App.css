@@ -1,42 +1,76 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+.custom-react-example-page {
+  display: flex;
+  width: 100%;
+  gap: 24px;
+  height: 720px;
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
+  .klleon-chat-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+    .avatar-container {
+      flex: 1;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow-y: auto;
+      border-radius: 24px;
+      border: 1px solid #ccc;
+      padding: 12px;
+      gap: 12px;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+
+      .chat-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: grey;
+        color: #fff;
+        padding: 12px;
+        border-radius: 12px;
+      }
+    }
   }
-  to {
-    transform: rotate(360deg);
+
+  .control-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 12px;
+
+    .log-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .method-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 12px;
+
+      input {
+        width: 320px;
+      }
+
+      .horizontal-control-item {
+        display: flex;
+        gap: 12px;
+      }
+
+      .vertical-control-item {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }
