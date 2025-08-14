@@ -53,8 +53,9 @@ const App = () => {
   const sdkHandler = {
     startChat: async () => {
       const { KlleonChat } = window;
+
       KlleonChat.onStatusEvent((status) => {
-        console.log("Status changed to:", status); // 이걸 추가
+        console.log("Status changed to:", status);
         setStatus(status);
         setIsLoading(status !== "VIDEO_CAN_PLAY");
       });
