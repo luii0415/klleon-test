@@ -1,3 +1,4 @@
+/* --- Klleon SDK 타입 정의 --- */
 type BaseStatus =
   | "IDLE"
   | "CONNECTING"
@@ -82,7 +83,7 @@ export interface KlleonChat {
   stopSpeech: () => void;
 }
 
-// 전역 window 객체에 KlleonChat 타입 선언
+/* --- 전역 타입 확장 --- */
 declare global {
   interface Window {
     KlleonChat: KlleonChat;
@@ -90,14 +91,14 @@ declare global {
 
   namespace JSX {
     interface IntrinsicElements {
-      "Avatar-container": React.DetailedHTMLProps<
-        Omit<React.HTMLAttributes<HTMLElement>, "className"> & {
+      "avatar-container": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
           class?: string;
         },
         HTMLElement
       >;
-      "Chat-container": React.DetailedHTMLProps<
-        Omit<React.HTMLAttributes<HTMLElement>, "className"> & {
+      "chat-container": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
           class?: string;
         },
         HTMLElement
@@ -105,3 +106,38 @@ declare global {
     }
   }
 }
+
+// 모듈 타입으로도 확장
+declare module "react" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "avatar-container": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          class?: string;
+        },
+        HTMLElement
+      >;
+      "chat-container": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          class?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+}
+
+/* --- 컴포넌트 Props --- */
+export interface AvatarProps {
+  videoStyle?: React.CSSProperties;
+  volume?: number;
+}
+
+export interface ChatProps {
+  delay?: number;
+  type?: "voice" | "text";
+  isShowCount?: boolean;
+}
+
+// ResponseChatType도 export
+export { ResponseChatType };
