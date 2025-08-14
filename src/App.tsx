@@ -138,10 +138,8 @@ const App = () => {
     changeAvatar: () => {
       const { KlleonChat } = window;
       const avatarList = [
-        "Avatar_ID_1",
-        "Avatar_ID_2",
-        "Avatar_ID_3",
-        "Avatar_ID_4",
+        "b630c9f9-444c-11ef-b707-0a8637d613d3",
+        "b6249514-444c-11ef-b707-0a8637d613d3",
       ];
       const randomAvatarId =
         avatarList[Math.floor(Math.random() * avatarList.length)];
