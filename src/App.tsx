@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Status } from "./types/KlleonSDK";
+import { ChatData, ResponseChatType, Status } from "./types/KlleonSDK";
 import type { AvatarProps, ChatProps } from "./types/KlleonSDK";
 
 const SDK_KEY = import.meta.env.VITE_API_KEY;
@@ -214,7 +214,7 @@ function App() {
           {/* 에코 기능 */}
           <div style={{ display: "flex", gap: "8px" }}>
             <input
-              placeholder="에코 메시지 입력"
+              placeholder="읽어줄 텍스트 입력 (AI 응답 없이 그대로 읽기)"
               value={echoMessage}
               disabled={isAvatarSpeaking}
               onChange={(e) => setEchoMessage(e.target.value)}
@@ -245,7 +245,7 @@ function App() {
                     : "pointer",
               }}
             >
-              에코
+              읽기만
             </button>
           </div>
 
