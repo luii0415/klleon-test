@@ -33,16 +33,16 @@
       .chat-item {
         display: flex;
         flex-direction: column;
-        gap: 8px; /* gap을 줄임 */
+        gap: 8px;
         background: grey;
         color: #fff;
         padding: 12px;
         border-radius: 12px;
-        word-wrap: break-word; /* 긴 텍스트 줄바꿈 */
+        word-wrap: break-word;
 
         h5,
         h6 {
-          margin: 0; /* 기본 마진 제거 */
+          margin: 0;
         }
       }
     }
