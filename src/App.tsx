@@ -1,16 +1,12 @@
-// import { ChatData, ResponseChatType, Status } from "@site/src/types/global";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChatData, ResponseChatType, Status } from "./types/KlleonSDK";
-
-interface AvatarProps {
-  videoStyle?: CSSProperties;
-  volume?: number;
-}
+import type { AvatarProps, ChatProps } from "./types/KlleonSDK";
 
 const SDK_KEY = import.meta.env.VITE_API_KEY;
 const AVATAR_ID = import.meta.env.VITE_API_Model;
 
-const App = () => {
+function App() {
+  // 두 번째 코드의 상태들
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<Status>("IDLE");
   const [chatData, setChatData] = useState<ChatData[]>([]);
@@ -22,19 +18,80 @@ const App = () => {
     "start chat 버튼을 통해 연결해주세요"
   );
 
-  const avatarContainerRef = useRef<HTMLElement & AvatarProps>(null);
+  // 첫 번째 코드의 ref들
+  const avatarRef = useRef<HTMLElement & AvatarProps>(null);
+  const chatRef = useRef<HTMLElement & ChatProps>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
+  // 첫 번째 코드의 자동 초기화 (아바타 관련)
   useEffect(() => {
-    if (avatarContainerRef.current) {
-      avatarContainerRef.current.videoStyle = {
+    const { KlleonChat } = window;
+
+    const init = async () => {
+      // 1. Status 이벤트 리스너 등록
+      KlleonChat.onStatusEvent((status) => {
+        console.log("Status changed to:", status);
+        setStatus(status);
+        setIsLoading(status !== "VIDEO_CAN_PLAY");
+        if (status === "VIDEO_CAN_PLAY") {
+          console.log("아바타 영상 재생 준비 완료!");
+        }
+      });
+
+      // 2. Chat 이벤트 리스너 등록
+      KlleonChat.onChatEvent((chatData) => {
+        console.log("SDK Chat Event:", chatData);
+        setChatType(chatData.chat_type);
+        setChatData((prev) => [...prev, chatData]);
+        if (chatData.chat_type === "PREPARING_RESPONSE") {
+          setIsAvatarSpeaking(true);
+          setGuideText("아바타가 답변을 준비중입니다. 잠시만 기다려주세요.");
+        }
+        if (chatData.chat_type === "TEXT") {
+          setGuideText(
+            "아바타가 발화중입니다. stopSpeech로 취소할 수 있습니다."
+          );
+        }
+        if (chatData.chat_type === "RESPONSE_IS_ENDED") {
+          setIsAvatarSpeaking(false);
+          setGuideText(
+            "아바타가 발화를 완료했습니다. 대화를 계속하려면 메세지를 입력하세요."
+          );
+        }
+      });
+
+      // 3. SDK 초기화
+      await KlleonChat.init({
+        sdk_key: SDK_KEY,
+        avatar_id: AVATAR_ID,
+      });
+      setGuideText("연결이 완료되었습니다.");
+    };
+
+    init();
+
+    // 첫 번째 코드의 아바타 설정
+    if (avatarRef.current) {
+      avatarRef.current.videoStyle = {
         borderRadius: "30px",
         objectFit: "cover",
       };
-      avatarContainerRef.current.volume = 100;
+      avatarRef.current.volume = 100;
     }
+
+    // 첫 번째 코드의 채팅 설정
+    if (chatRef.current) {
+      chatRef.current.delay = 30;
+      chatRef.current.type = "text";
+      chatRef.current.isShowCount = true;
+    }
+
+    return () => {
+      KlleonChat.destroy();
+    };
   }, []);
 
+  // 두 번째 코드의 채팅 컨테이너 스크롤 관리
   useEffect(() => {
     if (chatContainerRef.current) {
       const observer = new MutationObserver(() => {
@@ -51,6 +108,7 @@ const App = () => {
     }
   }, [chatContainerRef.current]);
 
+  // 두 번째 코드의 핸들러들 (아바타 변경 제외)
   const sdkHandler = {
     startChat: async () => {
       const { KlleonChat } = window;
@@ -83,7 +141,7 @@ const App = () => {
 
       await KlleonChat.init({
         sdk_key: SDK_KEY,
-        avatar_id: AVATAR_ID, // 고정된 AVATAR_ID 사용
+        avatar_id: AVATAR_ID,
       });
       setGuideText("연결이 완료되었습니다.");
     },
@@ -142,11 +200,14 @@ const App = () => {
   return (
     <div className="custom-react-example-page">
       <div className="klleon-chat-container">
+        {/* 첫 번째 코드 방식의 avatar-container */}
         <avatar-container
-          ref={avatarContainerRef}
+          ref={avatarRef}
           style={{ flex: 1 }}
           class=""
         ></avatar-container>
+
+        {/* 두 번째 코드의 채팅 컨테이너 */}
         <div
           ref={chatContainerRef}
           className="chat-container"
@@ -162,6 +223,8 @@ const App = () => {
           ))}
         </div>
       </div>
+
+      {/* 두 번째 코드의 컨트롤 UI (아바타 변경 제외) */}
       <div className="control-container">
         <div className="log-container">
           {isLoading && <h5>loading...</h5>}
@@ -233,6 +296,6 @@ const App = () => {
       </div>
     </div>
   );
-};
+}
 
 export default App;
