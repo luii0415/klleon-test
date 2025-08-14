@@ -85,16 +85,19 @@ function App() {
     }
   };
 
-  const startStt = () => {
+  // 음성 시작과 동시에 즉시 종료하여 실제 음성 데이터 전달 방지
+  const handleVoiceInput = async () => {
     const { KlleonChat } = window;
-    KlleonChat.startStt();
-  };
 
-  const endStt = () => {
-    const { KlleonChat } = window;
-    KlleonChat.endStt();
-    // 음성 입력이 끝나면 에코 실행
-    echo();
+    // 1.STT 시작
+    KlleonChat.startStt();
+
+    // 2.실제 음성 데이터가 처리되기 전에 즉시 종료
+    setTimeout(() => {
+      KlleonChat.endStt();
+      // 3. 에코 실행
+      echo();
+    }, 1); // 1ms 후 즉시 종료
   };
 
   // 수정된 에코 함수 - JSON 파일에서 순차적으로 메시지 읽기
@@ -197,33 +200,22 @@ function App() {
             </button>
           </div>
 
-          {/* 음성 메시지 - 종료 후 에코 실행 */}
+          {/* 음성 입력 (시작과 동시에 종료하여 에코만 실행) */}
           <div style={{ display: "flex", gap: "8px" }}>
             <button
-              onClick={startStt}
+              onClick={handleVoiceInput}
               disabled={isAvatarSpeaking}
               style={{
                 padding: "8px 12px",
                 borderRadius: "6px",
-                border: "1px solid #ddd",
+                border: "none",
                 background: "#28a745",
                 color: "white",
                 cursor: isAvatarSpeaking ? "not-allowed" : "pointer",
+                flex: 1,
               }}
             >
-              음성 시작
-            </button>
-            <button
-              onClick={endStt}
-              style={{
-                padding: "8px 12px",
-                borderRadius: "6px",
-                border: "1px solid #ddd",
-                background: "#dc3545",
-                color: "white",
-              }}
-            >
-              음성 종료 (종료 후 에코 실행)
+              음성 입력 (미리 준비된 대사 발화)
             </button>
           </div>
 
