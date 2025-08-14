@@ -28,9 +28,10 @@ const App = () => {
   useEffect(() => {
     if (avatarContainerRef.current) {
       avatarContainerRef.current.videoStyle = {
-        borderRadius: "24px",
+        borderRadius: "30px",
         objectFit: "cover",
       };
+      avatarContainerRef.current.volume = 100;
     }
   }, []);
 
@@ -141,7 +142,11 @@ const App = () => {
   return (
     <div className="custom-react-example-page">
       <div className="klleon-chat-container">
-        <avatar-container ref={avatarContainerRef} class="avatar-container" />
+        <avatar-container
+          ref={avatarContainerRef}
+          style={{ flex: 1 }}
+          class=""
+        ></avatar-container>
         <div
           ref={chatContainerRef}
           className="chat-container"
