@@ -82,7 +82,7 @@ const App = () => {
 
       await KlleonChat.init({
         sdk_key: SDK_KEY,
-        avatar_id: AVATAR_ID,
+        avatar_id: AVATAR_ID, // 고정된 AVATAR_ID 사용
       });
       setGuideText("연결이 완료되었습니다.");
     },
@@ -135,19 +135,6 @@ const App = () => {
       const { KlleonChat } = window;
       KlleonChat.echo(echoMessage);
       setEchoMessage("");
-    },
-    changeAvatar: () => {
-      const { KlleonChat } = window;
-      const avatarList = [
-        "b630c9f9-444c-11ef-b707-0a8637d613d3",
-        "b6249514-444c-11ef-b707-0a8637d613d3",
-      ];
-      const randomAvatarId =
-        avatarList[Math.floor(Math.random() * avatarList.length)];
-      KlleonChat.changeAvatar({
-        avatar_id: randomAvatarId,
-      });
-      setGuideText("아바타가 변경되었습니다.");
     },
   };
 
@@ -236,10 +223,6 @@ const App = () => {
               />
               <button onClick={sdkHandler.echo}>echo</button>
             </div>
-          </div>
-          <div className="horizontal-control-item">
-            <label>아바타 변경</label>
-            <button onClick={sdkHandler.changeAvatar}>changeAvatar</button>
           </div>
         </div>
       </div>

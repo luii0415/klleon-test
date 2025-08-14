@@ -15,16 +15,17 @@
     }
 
     .chat-container {
-      min-width: 350px;
-      min-height: 800px;
+      width: 350px; /* 고정 너비로 변경 */
+      min-height: 400px; /* min-height를 줄임 */
+      max-height: 600px; /* 최대 높이 제한 추가 */
       display: flex;
       flex-direction: column;
-      flex: 1;
       overflow-y: auto;
       border-radius: 24px;
       border: 1px solid #ccc;
       padding: 12px;
       gap: 12px;
+
       &::-webkit-scrollbar {
         display: none;
       }
@@ -32,11 +33,17 @@
       .chat-item {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px; /* gap을 줄임 */
         background: grey;
         color: #fff;
         padding: 12px;
         border-radius: 12px;
+        word-wrap: break-word; /* 긴 텍스트 줄바꿈 */
+
+        h5,
+        h6 {
+          margin: 0; /* 기본 마진 제거 */
+        }
       }
     }
   }
@@ -66,6 +73,7 @@
       .horizontal-control-item {
         display: flex;
         gap: 12px;
+        align-items: center; /* 수직 정렬 추가 */
       }
 
       .vertical-control-item {
