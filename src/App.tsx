@@ -11,6 +11,9 @@ function App() {
   const [echoMessage, setEchoMessage] = useState("");
   const [isAvatarSpeaking, setIsAvatarSpeaking] = useState(false);
   const [status, setStatus] = useState<Status>("IDLE");
+  const [chatHistory, setChatHistory] = useState<
+    { type: "user" | "avatar" | "echo"; message: string; time: string }[]
+  >([]);
 
   // 첫 번째 코드의 ref들
   const avatarRef = useRef<HTMLElement & AvatarProps>(null);
@@ -267,11 +270,80 @@ function App() {
         </div>
       </div>
 
-      <chat-container
-        ref={chatRef}
-        style={{ flex: 1 }}
-        class="rounded-3xl"
-      ></chat-container>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          background: "#f8f9fa",
+          borderRadius: "12px",
+          overflow: "hidden",
+        }}
+      >
+        {/* 커스텀 채팅 헤더 */}
+        <div
+          style={{
+            padding: "12px 16px",
+            background: "#007bff",
+            color: "white",
+            fontWeight: "bold",
+          }}
+        >
+          채팅 기록
+        </div>
+
+        {/* 커스텀 채팅 내용 */}
+        <div
+          style={{
+            flex: 1,
+            overflow: "auto",
+            padding: "16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+          }}
+        >
+          {chatHistory.map((chat, index) => (
+            <div
+              key={index}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "8px",
+                maxWidth: "80%",
+                alignSelf: chat.type === "user" ? "flex-end" : "flex-start",
+                background:
+                  chat.type === "user"
+                    ? "#007bff"
+                    : chat.type === "echo"
+                    ? "#6f42c1"
+                    : "#e9ecef",
+                color:
+                  chat.type === "user" || chat.type === "echo"
+                    ? "white"
+                    : "black",
+              }}
+            >
+              <div style={{ fontSize: "14px" }}>{chat.message}</div>
+              <div
+                style={{
+                  fontSize: "10px",
+                  opacity: 0.7,
+                  marginTop: "4px",
+                }}
+              >
+                {chat.time}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* SDK 채팅 컨테이너 숨김 */}
+        <chat-container
+          ref={chatRef}
+          style={{ display: "none" }}
+          class="rounded-3xl"
+        ></chat-container>
+      </div>
     </div>
   );
 }
