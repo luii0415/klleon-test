@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Status } from "./types/KlleonSDK";
 import type { AvatarProps, ChatProps } from "./types/KlleonSDK";
+import echoMessagesData from "./data/echoMessages.json";
 
 const SDK_KEY = import.meta.env.VITE_API_KEY;
 const AVATAR_ID = import.meta.env.VITE_API_Model;
@@ -8,14 +9,12 @@ const AVATAR_ID = import.meta.env.VITE_API_Model;
 function App() {
   // 추가 기능을 위한 상태들
   const [message, setMessage] = useState("");
-  const [echoMessage, setEchoMessage] = useState("");
   const [isAvatarSpeaking, setIsAvatarSpeaking] = useState(false);
   const [status, setStatus] = useState<Status>("IDLE");
-  const [echoMessages, _setEchoMessages] = useState<string[]>([]);
+
+  // 에코 메시지 관련 상태
+  const [echoMessages] = useState<string[]>(echoMessagesData);
   const [currentEchoIndex, setCurrentEchoIndex] = useState(0);
-  const [chatHistory, _setChatHistory] = useState<
-    { type: "user" | "avatar" | "echo"; message: string; time: string }[]
-  >([]);
 
   // 첫 번째 코드의 ref들
   const avatarRef = useRef<HTMLElement & AvatarProps>(null);
@@ -56,7 +55,7 @@ function App() {
 
     init();
 
-    // 아바타 설정
+    // 첫 번째 코드의 아바타 설정
     if (avatarRef.current) {
       avatarRef.current.videoStyle = {
         borderRadius: "30px",
@@ -65,7 +64,7 @@ function App() {
       avatarRef.current.volume = 100;
     }
 
-    // 채팅 설정
+    // 첫 번째 코드의 채팅 설정
     if (chatRef.current) {
       chatRef.current.delay = 30;
       chatRef.current.type = "text";
@@ -96,30 +95,27 @@ function App() {
     KlleonChat.endStt();
   };
 
+  // 수정된 에코 함수 - JSON 파일에서 순차적으로 메시지 읽기
   const echo = () => {
     const { KlleonChat } = window;
+
     if (echoMessages.length > 0) {
-      const messageToEcho = echoMessages[currentEchoIndex];
-      console.log(
-        `에코 실행: [${currentEchoIndex + 1}/${
-          echoMessages.length
-        }] ${messageToEcho}`
-      );
+      const messageToSpeak = echoMessages[currentEchoIndex];
+      KlleonChat.echo(messageToSpeak);
 
-      KlleonChat.echo(messageToEcho);
-
-      // 다음 인덱스로 이동 (마지막이면 처음으로)
-      setCurrentEchoIndex((prev) =>
-        prev + 1 >= echoMessages.length ? 0 : prev + 1
-      );
-    } else {
-      console.log("에코 메시지가 아직 로드되지 않았습니다.");
+      // 다음 인덱스로 이동 (마지막이면 처음으로 돌아감)
+      setCurrentEchoIndex((prevIndex) => (prevIndex + 1) % echoMessages.length);
     }
   };
 
   const stopSpeech = () => {
     const { KlleonChat } = window;
     KlleonChat.stopSpeech();
+  };
+
+  // 에코 인덱스 리셋 함수 (선택사항)
+  const resetEchoIndex = () => {
+    setCurrentEchoIndex(0);
   };
 
   return (
@@ -159,13 +155,6 @@ function App() {
         >
           <div style={{ fontSize: "12px", color: "#666" }}>
             Status: {status} {isAvatarSpeaking && "(발화중)"}
-            <br />
-            에코:{" "}
-            {echoMessages.length > 0
-              ? `${currentEchoIndex + 1}/${echoMessages.length} - "${
-                  echoMessages[currentEchoIndex]
-                }"`
-              : "로딩중..."}
           </div>
 
           {/* 텍스트 메시지 */}
@@ -236,28 +225,25 @@ function App() {
             </button>
           </div>
 
-          {/* 에코 기능 */}
-          <div style={{ display: "flex", gap: "8px" }}>
-            <input
-              placeholder="읽어줄 텍스트 입력 (AI 응답 없이 그대로 읽기)"
-              value={echoMessage}
-              disabled={isAvatarSpeaking}
-              onChange={(e) => setEchoMessage(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.nativeEvent.isComposing) {
-                  echo();
-                }
-              }}
+          {/* 수정된 에코 기능 */}
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            <div
               style={{
                 flex: 1,
                 padding: "8px",
-                borderRadius: "6px",
+                background: "#fff",
                 border: "1px solid #ddd",
+                borderRadius: "6px",
+                fontSize: "14px",
+                color: "#333",
               }}
-            />
+            >
+              다음 메시지: "{echoMessages[currentEchoIndex] || "없음"}" (
+              {currentEchoIndex + 1}/{echoMessages.length})
+            </div>
             <button
               onClick={echo}
-              disabled={isAvatarSpeaking || !echoMessage.trim()}
+              disabled={isAvatarSpeaking || echoMessages.length === 0}
               style={{
                 padding: "8px 12px",
                 borderRadius: "6px",
@@ -265,12 +251,26 @@ function App() {
                 background: "#6f42c1",
                 color: "white",
                 cursor:
-                  isAvatarSpeaking || !echoMessage.trim()
+                  isAvatarSpeaking || echoMessages.length === 0
                     ? "not-allowed"
                     : "pointer",
               }}
             >
-              읽기만
+              에코 ({currentEchoIndex + 1}/{echoMessages.length})
+            </button>
+            <button
+              onClick={resetEchoIndex}
+              disabled={isAvatarSpeaking}
+              style={{
+                padding: "8px 12px",
+                borderRadius: "6px",
+                border: "1px solid #ddd",
+                background: "#6c757d",
+                color: "white",
+                cursor: isAvatarSpeaking ? "not-allowed" : "pointer",
+              }}
+            >
+              처음부터
             </button>
           </div>
 
@@ -292,80 +292,11 @@ function App() {
         </div>
       </div>
 
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          background: "#f8f9fa",
-          borderRadius: "12px",
-          overflow: "hidden",
-        }}
-      >
-        {/* 커스텀 채팅 헤더 */}
-        <div
-          style={{
-            padding: "12px 16px",
-            background: "#007bff",
-            color: "white",
-            fontWeight: "bold",
-          }}
-        >
-          채팅 기록
-        </div>
-
-        {/* 커스텀 채팅 내용 */}
-        <div
-          style={{
-            flex: 1,
-            overflow: "auto",
-            padding: "16px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-          }}
-        >
-          {chatHistory.map((chat, index) => (
-            <div
-              key={index}
-              style={{
-                padding: "8px 12px",
-                borderRadius: "8px",
-                maxWidth: "80%",
-                alignSelf: chat.type === "user" ? "flex-end" : "flex-start",
-                background:
-                  chat.type === "user"
-                    ? "#007bff"
-                    : chat.type === "echo"
-                    ? "#6f42c1"
-                    : "#e9ecef",
-                color:
-                  chat.type === "user" || chat.type === "echo"
-                    ? "white"
-                    : "black",
-              }}
-            >
-              <div style={{ fontSize: "14px" }}>{chat.message}</div>
-              <div
-                style={{
-                  fontSize: "10px",
-                  opacity: 0.7,
-                  marginTop: "4px",
-                }}
-              >
-                {chat.time}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* SDK 채팅 컨테이너 숨김 */}
-        <chat-container
-          ref={chatRef}
-          style={{ display: "none" }}
-          class="rounded-3xl"
-        ></chat-container>
-      </div>
+      <chat-container
+        ref={chatRef}
+        style={{ flex: 1 }}
+        class="rounded-3xl"
+      ></chat-container>
     </div>
   );
 }
